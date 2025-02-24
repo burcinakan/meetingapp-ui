@@ -1,0 +1,16 @@
+<div class="card">
+    <p-menubar>
+        <ng-template #start>
+           <!-- // <p-avatar image="assets/logo.png" shape="circle"></p-avatar> -->
+            <p-image src="assets/logo.png" alt="Image" width="64" /> 
+            <span class="brand-name">MeetingApp</span>
+
+        </ng-template>
+        <ng-template #end>
+            <div class="flex items-center gap-2">
+                <p-button label="Çıkış Yap" [rounded]="true" severity="danger" icon="pi pi-times" iconPos="right" (click)="logout()" />
+                <p-avatar image="https://primefaces.org/cdn/primeng/images/demo/avatar/amyelsner.png" shape="circle" />
+            </div>
+        </ng-template>
+    </p-menubar>
+</div>
