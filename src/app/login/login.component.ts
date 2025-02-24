@@ -7,19 +7,23 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../_service/auth.service';
+import { MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
+import { RippleModule } from 'primeng/ripple';
 
 @Component({
   selector: 'app-login',
-  imports: [DividerModule, ButtonModule, InputTextModule,CommonModule,FormsModule],
+  imports: [DividerModule,ToastModule,RippleModule, ButtonModule, InputTextModule,CommonModule,FormsModule],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css'
+  styleUrl: './login.component.css',
+  providers: [MessageService]
 })
 export class LoginComponent {
   email: string = '';
   password: string = '';
 
 
-  constructor(private http: HttpClient, private router: Router,private authService: AuthService) {
+  constructor(private http: HttpClient, private router: Router,private authService: AuthService,private messageService: MessageService) {
 
   }
 
@@ -31,11 +35,9 @@ export class LoginComponent {
     };
 
     this.http.post('https://localhost:7273/api/Auth/Login',loginData).subscribe((response: any) => {
-      debugger
-      if (response.token) {
-        //localStorage.setItem('token', response.token); 
 
-        this.authService.login(response.token);
+      if (response.token) {
+        this.authService.login(response.token.result);
 
         this.router.navigate(['/home']).then(() => {
           window.location.reload();
@@ -47,10 +49,14 @@ export class LoginComponent {
     },
     (error) => {
       console.error('Hatalı Giriş', error);
-      alert('Hatalı Giriş');
+      this.messageService.add({ severity: 'error', summary: 'Hatalı Giriş', detail: 'Üye değilseniz lütfen üye olunuz!', life: 3000 });
+
     }
   )
 
+  }
+  goRegister() {
+    this.router.navigate(['/register']);
   }
   ngOnInit(): void {
     if (this.authService.isLoggedIn$) {

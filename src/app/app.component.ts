@@ -21,8 +21,6 @@ export class AppComponent  implements OnInit  {
     this.isLoggedIn$ = this.authService.isLoggedIn$;
   }
   ngOnInit(): void {
-    // Eğer authService üzerinden işlem yapılması gerekirse, buraya yazılabilir.
-    debugger
     this.isLoggedIn$ = this.authService.isLoggedIn$;
   }
  

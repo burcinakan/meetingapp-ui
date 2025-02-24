@@ -1,26 +1,36 @@
-<div class="card">
-    <div class="flex flex-col md:flex-row">
-        <div class="w-full md:w-5/12 flex flex-col items-center justify-center gap-3 py-5">
-            <form (ngSubmit)="onSubmit()">
-              <div class="flex flex-col gap-2">
-                <label for="email">EMail</label>
-                <input pInputText [(ngModel)]="email" id="email" name="email" type="text" required />
-              </div>
-              <div class="flex flex-col gap-2">
-                <label for="password">Password</label>
-                <input pInputText [(ngModel)]="password" id="password" name="password" type="password" required />
-              </div>
-              <div class="flex">
-                <p-button label="Login" icon="pi pi-user" class="w-full max-w-[17.35rem]" styleClass="w-full mx-auto" type="submit"></p-button>
-              </div>
-            </form>
-          </div>
-        <div class="w-full md:w-2/12">
-            <p-divider layout="vertical" class="!hidden md:!flex"><b>OR</b></p-divider>
-            <p-divider layout="horizontal" class="!flex md:!hidden" align="center"><b>OR</b></p-divider>
-        </div>
-        <div class="w-full md:w-5/12 flex items-center justify-center py-5">
-            <p-button label="Sign Up" icon="pi pi-user-plus" severity="success" class="w-full max-w-[17.35rem]" styleClass="w-full mx-auto" />
-        </div>
+<div class="flex items-center justify-center min-h-screen bg-gray-100">
+  <div class="bg-white shadow-md rounded px-12 pt-6 pb-8 mb-4">
+    <div class="flex justify-center mb-4">
+      <img src="assets/logo.png" alt="Logo" width="120" />
     </div>
+    <div class="text-center mb-6">
+      <p class="text-gray-700 text-lg">Lütfen giriş yapınız..</p>
+    </div>
+    <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="email">Email</label>
+        <input pInputText [(ngModel)]="email" name="email" id="email" type="email" required
+       [pattern]="'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'" />
+
+      </div>
+      <div class="mb-6">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="password">Şifre</label>
+        <input pInputText [(ngModel)]="password" required id="password" name="password" type="password" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+        <p *ngIf="password == ''" class="text-red-500 text-xs italic">Lütfen şifrenizi girin.</p>
+      </div>
+      <div class="flex items-center justify-between mb-4">
+        <p-toast />
+        <button pButton label="Giriş Yap" icon="pi pi-user" class="w-full max-w-[17.35rem] bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" [disabled]="!loginForm.valid" type="submit"></button>
+      </div>
+    </form>
+    <div class="text-center">
+      <p-button label="Kayıt Ol" 
+      icon="pi pi-user-plus" 
+      severity="info" class="w-full max-w-[17.35rem]" 
+      styleClass="w-full mx-auto" 
+      (click)="goRegister()"
+      />
+    </div>
+  </div>
+
 </div>

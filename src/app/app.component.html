@@ -1,10 +1,10 @@
 <app-navbar *ngIf="isLoggedIn$ | async"></app-navbar>
 <div class="flex flex-col md:flex-row">
-  <div *ngIf="isLoggedIn$ | async" class="w-full md:w-3/12 flex flex-col">
+  <div *ngIf="isLoggedIn$ | async" class="w-full md:w-2/12 flex flex-col pl-3">
     <app-sidebar></app-sidebar>
   </div>
   
-  <div [ngClass]="{'w-full md:w-9/12': (isLoggedIn$ | async), 'w-full': !(isLoggedIn$ | async)}" class="items-center justify-center py-5">
+  <div [ngClass]="{'w-full md:w-10/12': (isLoggedIn$ | async), 'w-full': !(isLoggedIn$ | async)}" class="items-center justify-center mt-2">
     <router-outlet></router-outlet>
   </div>
 </div>
