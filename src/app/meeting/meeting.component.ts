@@ -12,7 +12,6 @@ import { InputTextModule } from 'primeng/inputtext';
 import { FileUpload } from 'primeng/fileupload';
 import { Router } from '@angular/router';
 import { AuthService } from '../_service/auth.service';
-
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { Toast } from 'primeng/toast';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -28,6 +27,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
   styleUrl: './meeting.component.css',
   providers: [ConfirmationService, MessageService]
 })
+
 export class MeetingComponent implements OnInit {
   events: any[] = [];
   userId: string | null = null;
@@ -46,18 +46,15 @@ export class MeetingComponent implements OnInit {
     this.userId = this.authService.decodeToken().userId;
     this.fetchEvents();
   }
-  setColor(docUrl: string) {
-    if (docUrl === 'Hayır') return 'danger';
-    else return 'success';
-  }
-  async fetchEvents() {
-    try {
-      const response = await this.http.get<any[]>(`https://localhost:7273/api/Meeting/GetMeetingsByUserId/${this.userId}`).toPromise();
-      this.events = response ?? []; 
-    } catch (error) {
-      console.error('Error fetching events:', error);
-      this.events = [];
-    }
+  fetchEvents() {
+    this.http.get<any[]>(`https://localhost:7273/api/Meeting/GetMeetingsByUserId/${this.userId}`)
+      .subscribe({
+        next: (response) => this.events = response ?? [],
+        error: (error) => {
+          console.error('Error fetching events:', error);
+          this.events = [];
+        }
+      });
   }
   resultCheck() {
     if(this.isResult) {
@@ -67,17 +64,28 @@ export class MeetingComponent implements OnInit {
     }
    
   }
+  convertToLocal(dateString: string): string {
+    const localDate = new Date(dateString);
+
+  const year = localDate.getFullYear();
+  const month = String(localDate.getMonth() + 1).padStart(2, '0');
+  const day = String(localDate.getDate()).padStart(2, '0');
+  const hours = String(localDate.getHours()).padStart(2, '0');
+  const minutes = String(localDate.getMinutes()).padStart(2, '0');
+  const seconds = String(localDate.getSeconds()).padStart(2, '0');
+
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+  }
   add() {
     const event = this.selectedMeeting;
     const meetingData = {
       title: event.title,
-      startDate: event.startDate,
-      endDate: event.endDate,
+      startDate: this.convertToLocal(event.startDate),
+      endDate: this.convertToLocal(event.endDate),
       description: event.description,
       documentUrl: event.documentUrl,
       userId: this.userId
     };
-  
     this.http.post('https://localhost:7273/api/Meeting/AddMeeting', meetingData)
       .subscribe({
         next: (response: any) => {
@@ -95,13 +103,14 @@ export class MeetingComponent implements OnInit {
       });
   
     this.addDialogV = false;
+    this.isDocument = false;
   } 
   edit() {
     const event = this.selectedMeeting;
     const meetingData = {
       title: event.title,
-      startDate: event.startDate,
-      endDate: event.endDate,
+      startDate: this.convertToLocal(event.startDate),
+      endDate: this.convertToLocal(event.endDate),
       description: event.description,
       documentUrl: event.documentUrl,
       userId: this.userId
@@ -124,6 +133,7 @@ export class MeetingComponent implements OnInit {
     });
 
   this.editDialogV = false;
+  this.isDocument = false;
 
   }
   remove() {
@@ -145,7 +155,6 @@ export class MeetingComponent implements OnInit {
     this.http.post(`https://localhost:7273/api/Meeting/CancelMeeting/${event.id}`, event)
       .subscribe({
         next: (response: any) => {
-          debugger
           if (response) {
             this.router.navigate(['/canceledmeeting']) 
           } else {
@@ -172,7 +181,6 @@ export class MeetingComponent implements OnInit {
       endDate: new Date(event.endDate)
     };
     this.editDialogV = true;
-    console.log(this.selectedMeeting)
   }
   addDialog(event: any) {
     this.selectedMeeting = {
@@ -187,15 +195,16 @@ export class MeetingComponent implements OnInit {
   }
   hideAddDialog() {
     this.addDialogV = false;
+    this.isDocument = false;
   }
   hideEditDialog() {
     this.editDialogV = false;
+    this.isDocument = false;
   }
   hideRemoveDialog() {
     this.removeDialogV = false;
   }
   showMessage(severity: string,summary: string, detail: string) {
-    debugger
     this.messageService.add({ severity: severity, summary: summary, detail: detail });
   }
   uploadFile(event: any) {
@@ -215,6 +224,14 @@ export class MeetingComponent implements OnInit {
         this.isDocument = false;
       }
     );
+
+
   }
-  
+  cancelFile(event: any) {
+    this.isDocument = false;
+  }
+  setColor(docUrl: string) {
+    if (docUrl === 'https://example.com/documents') return 'danger';
+    else return 'success';
+  }
 }

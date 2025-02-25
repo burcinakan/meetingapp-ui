@@ -18,11 +18,15 @@
     <ng-template #body let-event>
       <tr>
         <td>{{ event.title }}</td>
-        <td>{{ event.startDate | date }}</td>
-        <td>{{ event.endDate | date  }}</td>
+        <td>{{ event.startDate | date: 'dd.MM.yyyy HH:mm'   }}</td>
+        <td>{{ event.endDate  | date: 'dd.MM.yyyy HH:mm'  }}</td>
         <td>{{ event.description }}</td>
         <td>
-            <p-badge [value]="event.documentUrl ? 'Var' : 'Yok'" [severity]="setColor(event.documentExists)" />
+            <p-badge 
+  [value]="event.documentUrl === 'https://example.com/documents' ? 'Yok' : 'Var'" 
+  [severity]="setColor(event.documentUrl)" 
+/>
+
         </td>
         <td>
             <p-toast />
@@ -54,12 +58,12 @@
             <div class="flex w-full gap-4">
                 <div class="w-1/2">
                     <label for="startDate" class="block font-bold mb-3">Başlangıç Tarihi *</label>
-                    <p-datepicker [(ngModel)]="selectedMeeting.startDate" name="startDate" #startDate="ngModel" required></p-datepicker>
+                    <p-datepicker [(ngModel)]="selectedMeeting.startDate" dateFormat="dd.mm.yy" hourFormat="24"  [showTime]="true" name="startDate" #startDate="ngModel" required></p-datepicker>
                     <small class="text-red-500" *ngIf="startDate.invalid && startDate.touched">Başlangıç tarihi zorunludur!</small>
                 </div>
                 <div class="w-1/2">
                     <label for="endDate" class="block font-bold mb-3">Bitiş Tarihi *</label>
-                    <p-datepicker [(ngModel)]="selectedMeeting.endDate" name="endDate" #endDate="ngModel" required></p-datepicker>
+                    <p-datepicker [(ngModel)]="selectedMeeting.endDate" dateFormat="dd.mm.yy" hourFormat="24"  [showTime]="true" name="endDate" #endDate="ngModel" required></p-datepicker>
                     <small class="text-red-500" *ngIf="endDate.invalid && endDate.touched">Bitiş tarihi zorunludur!</small>
                 </div>
             </div>
@@ -80,7 +84,7 @@
                 <p-badge *ngIf="isDocument" value="Dosya Yükleme Başarılı!" severity="success" class="mb-2" />
                 <p-badge *ngIf="!isDocument" value="Dosya Seçtikten Sonra Yükle Butonuna Basın!" severity="warn" class="mb-2" />
                 <div class="card flex justify-center">
-                    <p-fileUpload name="file" (uploadHandler)="uploadFile($event)" customUpload="true" accept="application/pdf" class="w-full">
+                    <p-fileUpload name="file" chooseLabel="Seç" uploadLabel="Yükle" cancelLabel="İptal" (uploadHandler)="uploadFile($event)"  (onRemove)="cancelFile($event)"  customUpload="true" accept="application/pdf" class="w-full">
                     </p-fileUpload>
                 </div>
             </div>
@@ -104,12 +108,12 @@
         <div class="flex w-full gap-4">
             <div class="w-1/2">
                 <label for="startDate" class="block font-bold mb-3">Başlangıç Tarihi</label>
-                <p-datepicker [(ngModel)]="selectedMeeting.startDate" />
+                <p-datepicker [(ngModel)]="selectedMeeting.startDate"  dateFormat="dd.mm.yy" hourFormat="24"  [showTime]="true" />
 
             </div>
             <div class="w-1/2">
                 <label for="endDate" class="block font-bold mb-3">Bitiş Tarihi</label>
-                <p-datepicker [(ngModel)]="selectedMeeting.endDate"   />
+                <p-datepicker [(ngModel)]="selectedMeeting.endDate" dateFormat="dd.mm.yy" hourFormat="24"  [showTime]="true"   />
             </div>
         </div>
         <div class="w-full">
@@ -117,8 +121,8 @@
             <textarea id="description" pTextarea class="w-full" [(ngModel)]="selectedMeeting.description" rows="3"></textarea>
         </div>
         <div class="w-full">
-            <label for="description" class="block font-bold mb-3 text-wrap">Yüklü Doküman</label>
-            <h6 class="mb-2">{{ selectedMeeting.documentUrl }}</h6>
+            <label  *ngIf="selectedMeeting.documentUrl !== 'https://example.com/documents'" for="description" class="block font-bold mb-3 text-wrap">Yüklü Doküman</label>
+            <h6 class="mb-2" *ngIf="selectedMeeting.documentUrl !== 'https://example.com/documents'">{{ selectedMeeting.documentUrl }}</h6>
 
             <label for="description" class="block font-bold mb-3 text-wrap">Yeni Doküman Yükle</label>
             <p-badge *ngIf="isDocument" value="Dosya Yükleme Başarılı!" severity="success" class="mb-2" />
@@ -128,8 +132,10 @@
                 <p-fileUpload 
                 name="file" 
                 (uploadHandler)="uploadFile($event)" 
+                (cancelHandler)="cancelFile($event)" 
                 customUpload="true" 
                 accept="application/pdf"
+                chooseLabel="Seç" uploadLabel="Yükle" cancelLabel="İptal"
                 class="w-full">
               </p-fileUpload>
               

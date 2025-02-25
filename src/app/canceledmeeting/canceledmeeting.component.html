@@ -18,8 +18,8 @@
     <ng-template #body let-event>
       <tr>
         <td>{{ event.title }}</td>
-        <td>{{ event.startDate | date }}</td>
-        <td>{{ event.endDate | date  }}</td>
+        <td>{{ event.startDate | date: 'dd.MM.yyyy HH:mm' }}</td>
+        <td>{{ event.endDate | date: 'dd.MM.yyyy HH:mm'  }}</td>
         <td>{{ event.description }}</td>
         <td>
             <p-badge [value]="event.documentUrl ? 'Var' : 'Yok'" [severity]="setColor(event.documentExists)" />

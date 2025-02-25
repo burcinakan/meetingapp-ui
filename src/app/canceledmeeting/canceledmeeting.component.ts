@@ -38,14 +38,15 @@ export class CanceledmeetingComponent {
     if (docUrl === 'Hayır') return 'danger';
     else return 'success';
   }
-  async fetchEvents() {
-    try {   
-      const response = await this.http.get<any[]>(`https://localhost:7273/api/Meeting/GetCancelMeetingsByUserId/${this.userId}`).toPromise();
-      this.events = response ?? []; 
-    } catch (error) {
-      console.error('Error fetching events:', error);
-      this.events = [];
-    }
+  fetchEvents() {
+    this.http.get<any[]>(`https://localhost:7273/api/Meeting/GetCancelMeetingsByUserId/${this.userId}`)
+      .subscribe({
+        next: (response) => this.events = response ?? [],
+        error: (error) => {
+          console.error('Error fetching events:', error);
+          this.events = [];
+        }
+      });
   }
   revertMeeting(event: any) {
     this.http.post(`https://localhost:7273/api/Meeting/RevertMeeting/${event.id}`, event)
@@ -53,8 +54,6 @@ export class CanceledmeetingComponent {
         next: (response: any) => {
           if (response) {
             this.router.navigate(['/meeting']) 
-          } else {
-             console.log('Bir hata oluştu.')
           }
         },
         error: (error) => {
